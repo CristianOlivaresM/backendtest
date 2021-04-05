@@ -1,0 +1,26 @@
+version: "2"
+services:
+  database:
+    image: mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: enviame
+      #MYSQL_USER: apiclient
+      #MYSQL_PASSWORD: apiclient
+    volumes:
+      - ./data:/var/lib/mysql
+      - ./load_data:/tmp/load_data
+      - ./load_data:/docker-entrypoint-initdb.d
+      #- ./load_data/insert.sql:/docker-entrypoint-initdb.d/insert.sql
+    ports:
+      - 3308:3306
+  php:
+    build:
+      context: .
+    volumes:
+      - ./src:/src
+    links:
+      - database
+    ports:
+      - 8000:8000
+    command: php -S 0.0.0.0:8000 -t public public/index.php
